@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Build output
+.next/
+dist/
+build/
+coverage/
+out/
+.vercel
+
+# Prisma and TypeScript generated files
+kanban-flow-server/.build/
+*.tsbuildinfo
+prisma/*.db
+prisma/*.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/settings.json
+.turbo
+.cache
