@@ -43,8 +43,8 @@ This repository contains the frontend only. The frontend expects the backend API
 1. Clone the repository and enter the project directory.
 
 	```bash
-	git clone https://github.com/abdullah-al-monir/kanban-flow-frontend.git
-	cd kanban-flow-frontend
+	git clone https://github.com/abdullah-al-monir/kanban-flow
+	cd kanban-flow/kanban-flow
 	```
 
 2. Install dependencies.

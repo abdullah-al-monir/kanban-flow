@@ -23,7 +23,7 @@ For local development, install:
 1. Clone the repository and enter it:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/abdullah-al-monir/kanban-flow.git
    cd kanban-flow
    ```
 
