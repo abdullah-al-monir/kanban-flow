@@ -13,7 +13,7 @@ export function ArchivedBoards() {
         <div className="mb-4 flex items-center gap-2">
           <Archive size={16} className="text-muted-foreground" />
           <h2 className="text-sm font-semibold text-foreground">
-            Archived boards
+            Archived projects
           </h2>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -31,10 +31,10 @@ export function ArchivedBoards() {
         <Archive size={16} className="text-muted-foreground" />
         <div>
           <h2 className="text-sm font-semibold text-foreground">
-            Archived boards
+            Archived projects
           </h2>
           <p className="text-xs text-muted-foreground">
-            Restore a board or delete it permanently.
+            Restore a project or delete it permanently.
           </p>
         </div>
       </div>

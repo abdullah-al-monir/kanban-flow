@@ -23,8 +23,8 @@ export function BoardsGrid() {
     return (
       <EmptyState
         icon={LayoutGrid}
-        title="No boards yet"
-        description="Create your first board to start organizing work into columns and tasks."
+        title="No projects yet"
+        description="Create your first project to start organizing work into columns and tasks."
         action={<CreateBoardDialog />}
       />
     )

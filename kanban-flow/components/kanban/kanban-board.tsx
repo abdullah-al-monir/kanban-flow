@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   closestCenter,
   closestCorners,
   useSensor,
@@ -70,8 +71,11 @@ export function KanbanBoard({ board, myRole }: KanbanBoardProps) {
   }, [board.columns, activeTask, activeColumn])
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: { distance: 8 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 8 },
     })
   )
 

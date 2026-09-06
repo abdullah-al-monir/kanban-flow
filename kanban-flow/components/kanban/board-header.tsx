@@ -12,7 +12,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+} from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -25,11 +30,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useHeaderContent } from "@/components/shared/header-content-context"
 import { useDeleteBoard, useUpdateBoard } from "@/hooks/use-board"
 import { useRestoreBoard } from "@/hooks/use-boards"
 import { roleSatisfies } from "@/lib/constants"
@@ -38,14 +45,13 @@ import type { BoardDetail, BoardRole } from "@/lib/types"
 import {
   Archive,
   ArchiveRestore,
-  ArrowLeft,
+  ChevronDown,
   Clock,
-  MoreHorizontal,
   Pencil,
   Trash2,
+  UserPlus,
   Users,
 } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ActivitiesDialog } from "./activities-dialog"
@@ -90,135 +96,147 @@ export function BoardHeader({
     }
   }
 
-  const visibleMembers = board.members.slice(0, 5)
+  const visibleMembers = board.members.slice(0, 4)
   const extraCount = board.members.length - visibleMembers.length
 
-  return (
-    <div className="flex flex-col gap-3 border-b border-border px-5 py-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-          <Link
-            href="/boards"
-            className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+  useHeaderContent(
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex max-w-full min-w-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-accent">
+          <span className="truncate text-[15px] font-semibold text-foreground">
+            #{board.title}
+          </span>
+          {myRole && (
+            <RoleBadge
+              role={myRole}
+              className="ml-1 hidden shrink-0 text-[10px] sm:block"
+            />
+          )}
+          <ChevronDown size={15} className="shrink-0 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="min-w-52 p-1.5">
+        <DropdownMenuItem
+          className="gap-2 py-1.5"
+          onClick={() => setMembersOpen(true)}
+        >
+          <Users size={14} />
+          Members
+        </DropdownMenuItem>
+        {(!board.isArchived ? canManage : isOwner) && (
+          <DropdownMenuItem
+            className="gap-2 py-1.5"
+            onClick={() => setActivitiesOpen(true)}
           >
-            <ArrowLeft size={15} />
-          </Link>
-
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-lg font-semibold text-foreground">
-              {board.title}
-            </h1>
-            {board.description && (
-              <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
-                {board.description}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-          {myRole && <RoleBadge role={myRole} />}
-
-          <button
-            type="button"
-            onClick={() => setMembersOpen(true)}
-            className="flex items-center -space-x-2 rounded-full transition-opacity hover:opacity-80"
-          >
-            {visibleMembers.map((m) => (
-              <Avatar
-                key={m.userId}
-                className="size-7 border-2 border-background"
-              >
-                <AvatarFallback className="text-[10px] font-semibold">
-                  {initials(m.user.fullName)}
-                </AvatarFallback>
-              </Avatar>
-            ))}
-            {extraCount > 0 && (
-              <div className="flex size-7 items-center justify-center rounded-full border-2 border-background bg-muted text-[10px] font-semibold text-muted-foreground">
-                +{extraCount}
-              </div>
-            )}
-          </button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5"
-            onClick={() => setMembersOpen(true)}
-          >
-            <Users size={14} />
-            Members
-          </Button>
-
-          {(!board.isArchived ? canManage : isOwner) && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setActivitiesOpen(true)}
+            <Clock size={14} />
+            Activity
+          </DropdownMenuItem>
+        )}
+        {canManage && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="gap-2 py-1.5"
+              onClick={() => {
+                setTitle(board.title)
+                setDescription(board.description ?? "")
+                setEditOpen(true)
+              }}
             >
-              <Clock size={14} />
-              Activity
-            </Button>
-          )}
+              <Pencil size={14} />
+              Edit project
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="gap-2 py-1.5"
+              disabled={updateBoard.isPending || restoreBoard.isPending}
+              onClick={() => {
+                if (board.isArchived) {
+                  restoreBoard.mutate(board.id)
+                } else {
+                  updateBoard.mutate({ isArchived: true })
+                }
+              }}
+            >
+              {board.isArchived ? (
+                <ArchiveRestore size={14} />
+              ) : (
+                <Archive size={14} />
+              )}
+              {board.isArchived ? "Unarchive project" : "Archive project"}
+            </DropdownMenuItem>
+            {isOwner && (
+              <DropdownMenuItem
+                className="gap-2 py-1.5"
+                variant="destructive"
+                onClick={() => setConfirmDelete(true)}
+              >
+                <Trash2 size={14} />
+                Delete project
+              </DropdownMenuItem>
+            )}
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>,
+    <div className="flex items-center gap-1 sm:gap-2.5">
+      {canManage && (
+        <Button
+          size="sm"
+          className="h-8 gap-1.5 px-2.5 sm:px-3"
+          onClick={() => setMembersOpen(true)}
+          aria-label="Invite members"
+        >
+          <UserPlus size={14} />
+          <span className="hidden sm:inline">Invite members</span>
+        </Button>
+      )}
 
-          {canManage && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 text-muted-foreground"
-                >
-                  <MoreHorizontal size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-44 p-1.5">
-                <DropdownMenuItem
-                  className="gap-2 py-1.5 whitespace-nowrap"
-                  onClick={() => {
-                    setTitle(board.title)
-                    setDescription(board.description ?? "")
-                    setEditOpen(true)
-                  }}
-                >
-                  <Pencil size={14} />
-                  Edit board
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="gap-2 py-1.5 whitespace-nowrap"
-                  disabled={updateBoard.isPending || restoreBoard.isPending}
-                  onClick={() => {
-                    if (board.isArchived) {
-                      restoreBoard.mutate(board.id)
-                    } else {
-                      updateBoard.mutate({ isArchived: true })
-                    }
-                  }}
-                >
-                  {board.isArchived ? (
-                    <ArchiveRestore size={14} />
-                  ) : (
-                    <Archive size={14} />
-                  )}
-                  {board.isArchived ? "Unarchive board" : "Archive board"}
-                </DropdownMenuItem>
-                {isOwner && (
-                  <DropdownMenuItem
-                    className="gap-2 py-1.5 whitespace-nowrap"
-                    variant="destructive"
-                    onClick={() => setConfirmDelete(true)}
-                  >
-                    <Trash2 size={14} />
-                    Delete board
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+      <button
+        type="button"
+        onClick={() => setMembersOpen(true)}
+        className="flex shrink-0 items-center gap-2 rounded-full transition-opacity hover:opacity-80"
+        aria-label={`${board.members.length} ${board.members.length === 1 ? "member" : "members"}`}
+      >
+        <AvatarGroup className="sm:hidden">
+          {visibleMembers.slice(0, 2).map((m) => (
+            <Avatar key={m.userId} size="sm">
+              <AvatarFallback className="text-[10px] font-semibold">
+                {initials(m.user.fullName)}
+              </AvatarFallback>
+            </Avatar>
+          ))}
+          {board.members.length > 2 && (
+            <AvatarGroupCount className="size-6 text-[10px]">
+              +{board.members.length - 2}
+            </AvatarGroupCount>
           )}
-        </div>
-      </div>
+        </AvatarGroup>
+
+        <AvatarGroup className="hidden sm:flex">
+          {visibleMembers.map((m) => (
+            <Avatar key={m.userId} size="sm">
+              <AvatarFallback className="text-[10px] font-semibold">
+                {initials(m.user.fullName)}
+              </AvatarFallback>
+            </Avatar>
+          ))}
+          {extraCount > 0 && (
+            <AvatarGroupCount className="size-6 text-[10px]">
+              +{extraCount}
+            </AvatarGroupCount>
+          )}
+        </AvatarGroup>
+
+        <span className="hidden text-xs text-muted-foreground lg:inline">
+          {board.members.length}{" "}
+          {board.members.length === 1 ? "member" : "members"}
+        </span>
+      </button>
+    </div>
+  )
+
+  return (
+    <>
       <Dialog
         open={editOpen}
         onOpenChange={(open) => {
@@ -231,7 +249,7 @@ export function BoardHeader({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit board</DialogTitle>
+            <DialogTitle>Edit project</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
@@ -278,7 +296,6 @@ export function BoardHeader({
         open={activitiesOpen}
         onOpenChange={setActivitiesOpen}
       />
-      {/* add */}
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -286,7 +303,7 @@ export function BoardHeader({
               Delete &ldquo;{board.title}&rdquo;?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently deletes the board, its columns, tasks, and
+              This permanently deletes the project, its columns, tasks, and
               activity. This can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -305,6 +322,6 @@ export function BoardHeader({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   )
 }

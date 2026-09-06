@@ -89,7 +89,7 @@ export function ArchivedBoardCard({ board }: { board: BoardSummary }) {
               Delete &ldquo;{board.title}&rdquo;?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently deletes the board, its columns, tasks, and
+              This permanently deletes the project, its columns, tasks, and
               activity. This can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

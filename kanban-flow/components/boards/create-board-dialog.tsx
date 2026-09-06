@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { Plus } from "lucide-react"
 import {
@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useCreateBoard } from "@/hooks/use-boards"
 
-export function CreateBoardDialog() {
+export function CreateBoardDialog({ trigger }: { trigger?: ReactNode }) {
   const router = useRouter()
   const createBoard = useCreateBoard()
   const [open, setOpen] = useState(false)
@@ -53,14 +53,16 @@ export function CreateBoardDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="gap-1.5">
-          <Plus size={15} />
-          New board
-        </Button>
+        {trigger ?? (
+          <Button className="gap-1.5">
+            <Plus size={15} />
+            New project
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a board</DialogTitle>
+          <DialogTitle>Create a project</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
@@ -80,7 +82,7 @@ export function CreateBoardDialog() {
               id="board-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="What's this board for? (optional)"
+              placeholder="What's this project for? (optional)"
               rows={3}
             />
           </div>
@@ -93,7 +95,7 @@ export function CreateBoardDialog() {
             onClick={handleCreate}
             disabled={!title.trim() || createBoard.isPending}
           >
-            {createBoard.isPending ? "Creating..." : "Create board"}
+            {createBoard.isPending ? "Creating..." : "Create project"}
           </Button>
         </DialogFooter>
       </DialogContent>

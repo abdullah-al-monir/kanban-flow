@@ -1,12 +1,13 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { FolderX, Loader2 } from "lucide-react"
+import { FolderX} from "lucide-react"
 import { BoardHeader } from "@/components/kanban/board-header"
 import { KanbanBoard } from "@/components/kanban/kanban-board"
 import { EmptyState } from "@/components/shared/empty-state"
 import { useBoard, useMyBoardRole } from "@/hooks/use-board"
 import { ApiClientError } from "@/lib/api/client"
+import { Spinner } from "@/components/ui/spinner";
 
 export default function BoardPage() {
   const params = useParams<{ boardId: string }>()
@@ -17,7 +18,7 @@ export default function BoardPage() {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader2 className="animate-spin text-muted-foreground" size={22} />
+        <Spinner/>
       </div>
     )
   }
@@ -28,18 +29,18 @@ export default function BoardPage() {
       <div className="flex h-full items-center justify-center p-6">
         <EmptyState
           icon={FolderX}
-          title={notFound ? "Board not found" : "Something went wrong"}
+          title={notFound ? "Project not found" : "Something went wrong"}
           description={
             notFound
-              ? "This board doesn't exist, or you don't have access to it."
-              : "We couldn't load this board. Please try again."
+              ? "This project doesn't exist, or you don't have access to it."
+              : "We couldn't load this project. Please try again."
           }
           action={
             <button
               onClick={() => router.push("/boards")}
               className="text-sm font-medium text-primary hover:underline"
             >
-              Back to your boards
+              Back to your projects
             </button>
           }
         />

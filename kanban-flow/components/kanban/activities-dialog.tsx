@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import {
-  Loader2,
   PlusCircle,
   ArrowRightLeft,
   Pencil,
@@ -26,6 +25,7 @@ import { useActivities } from "@/hooks/use-activities"
 import { activityMessage, timeAgo } from "@/lib/activity-format"
 import { initials } from "@/lib/format"
 import type { ActivityType } from "@/lib/types"
+import { Spinner } from "../ui/spinner";
 
 const TYPE_ICON: Record<
   ActivityType,
@@ -96,10 +96,7 @@ export function ActivitiesDialog({
         <div className="max-h-[60vh] overflow-y-auto px-5 py-3">
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <Loader2
-                className="animate-spin text-muted-foreground"
-                size={20}
-              />
+              <Spinner/>
             </div>
           ) : items.length === 0 ? (
             <EmptyState
@@ -148,7 +145,7 @@ export function ActivitiesDialog({
               onClick={() => setOffset((o) => o + PAGE_SIZE)}
             >
               {isFetching ? (
-                <Loader2 className="animate-spin" size={14} />
+                <Spinner/>
               ) : (
                 "Load more"
               )}

@@ -3,13 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authApi } from "@/lib/api/auth"
 import { ApiClientError } from "@/lib/api/client"
 import { useAuthStore } from "@/store/auth-store"
+import { Spinner } from "../ui/spinner"
 
 export function RegisterForm() {
   const router = useRouter()
@@ -85,11 +85,7 @@ export function RegisterForm() {
       {error && <p className="text-[13px] text-destructive">{error}</p>}
 
       <Button type="submit" disabled={loading} className="mt-1">
-        {loading ? (
-          <Loader2 className="animate-spin" size={15} />
-        ) : (
-          "Create account"
-        )}
+        {loading ? <Spinner /> : "Create account"}
       </Button>
 
       <p className="text-center text-[13px] text-muted-foreground">
